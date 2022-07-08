@@ -62,6 +62,7 @@ const App = () => {
         console.log('saved user exist')
         Roam.getUser(userId, success => {
           console.log(JSON.stringify(success))
+          toggleListener(userId)
         }, error => {
           console.log(JSON.stringify(error))
         })
@@ -69,7 +70,8 @@ const App = () => {
         console.log('no saved user')
         Roam.createUser('test-user', success => {
           console.log(JSON.stringify(success))
-          await AsyncStorage.setItem('ROAM_USER', success.userId)
+          AsyncStorage.setItem('ROAM_USER', success.userId)
+          toggleListener(success.userId)
         }, error => {
           console.log(JSON.stringify(error))
         })
@@ -78,6 +80,20 @@ const App = () => {
       console.log(e)
     }
   }
+
+
+
+
+  const toggleListener = (userId) => {
+    Roam.toggleListener(true, true, success => {
+      console.log(JSON.stringify(success))
+      Roam.subscribe('LOCATION', userId)
+    }, error => {
+      console.log(JSON.stringify(error))
+    })
+  }
+
+
 
 
   const startTracking = () => {
@@ -134,7 +150,6 @@ const App = () => {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <Header />
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
@@ -175,7 +190,7 @@ const styles = StyleSheet.create({
   },
   button: {
     margin: 50,
-    width: '100%',
+    flex: 1,
     height: 30,
     alignItems: 'center',
     backgroundColor: 'blue'
